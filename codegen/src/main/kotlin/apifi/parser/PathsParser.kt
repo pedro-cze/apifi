@@ -1,6 +1,7 @@
 package apifi.parser
 
 import apifi.helpers.replaceArrayToList
+import apifi.helpers.toCamelCase
 import apifi.helpers.toTitleCase
 import apifi.helpers.typeDeclaration
 import apifi.models.Model
@@ -21,7 +22,7 @@ object PathsParser {
                 val responses = ResponseBodyParser.parse(operation.responses, operationSpecifier)
                 models.addAll(request?.models ?: emptyList())
                 models.addAll(responses?.models ?: emptyList())
-                Operation(httpMethod, operation.operationId ?: httpMethod.toString().toLowerCase(),
+                Operation(httpMethod, getValidOperationId(operation.operationId) ?: httpMethod.toString().toLowerCase(),
                     operation.tags ?: emptyList(), params, request?.result, responses?.result ?: emptyList())
             }
             Path(endpoint, operations)
@@ -31,4 +32,17 @@ object PathsParser {
     private fun operationSpecifier(operation: io.swagger.v3.oas.models.Operation, httpMethod: PathItem.HttpMethod, endpoint: String) =
         (operation.operationId
             ?: (httpMethod.toString() + endpoint.replace(Regex("[^A-Za-z ]"), " ")).toTitleCase())
+
+    /**
+     * Must start with a lower case letter and use the camel case and no underscores.
+     */
+    private fun getValidOperationId(operationId: String?): String? {
+        return operationId?.let {
+            if (it.first().isDigit()) {
+                operationId.substring(1).toCamelCase()
+            } else {
+                operationId.toCamelCase()
+            }
+        }
+    }
 }

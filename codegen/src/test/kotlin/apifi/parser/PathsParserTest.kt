@@ -5,6 +5,7 @@ import apifi.parser.models.Param
 import apifi.parser.models.ParamType
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.swagger.v3.oas.models.PathItem.HttpMethod
 import io.swagger.v3.parser.OpenAPIV3Parser
 import org.apache.commons.io.FileUtils
@@ -56,6 +57,14 @@ class PathsParserTest : DescribeSpec({
             path.url shouldBe "/pets"
             path.operations!![0].type shouldBe HttpMethod.GET
             path.operations!![0].params[0] shouldBe Param("id", "kotlin.collections.List<kotlin.String>", false, ParamType.Query)
+        }
+        it("with invalid operationId") {
+            val file = FileUtils.getFile("src", "test-res", "parser", "params", "with-invalid-operationId.yml").readText().trimIndent()
+            val openApi = OpenAPIV3Parser().readContents(file).openAPI
+            val path = PathsParser.parse(openApi.paths).result[0]
+            val operation = path.operations?.first()
+            operation shouldNotBe null
+            operation?.name shouldBe "listAllPets"
         }
     }
 })
