@@ -39,7 +39,7 @@ object PathsParser {
     private fun getValidOperationId(operationId: String?): String? {
         return operationId?.let {
             if (it.first().isDigit()) {
-                operationId.substring(1).toCamelCase()
+                "operation$operationId".toCamelCase()
             } else {
                 operationId.toCamelCase()
             }

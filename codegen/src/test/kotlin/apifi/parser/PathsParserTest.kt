@@ -64,7 +64,7 @@ class PathsParserTest : DescribeSpec({
             val path = PathsParser.parse(openApi.paths).result[0]
             val operation = path.operations?.first()
             operation shouldNotBe null
-            operation?.name shouldBe "listAllPets"
+            operation?.name shouldBe "operation1ListAllPets"
         }
     }
 })
